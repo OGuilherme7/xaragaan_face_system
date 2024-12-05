@@ -1,12 +1,12 @@
 const videoElement = document.querySelector('#video');
 
-async function startCamera() {
+async function camera() {
     try {
       const videoElement = document.getElementById('video');
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoElement.srcObject = stream;
     } catch (err) {
-      console.error("Error accessing the camera: ", err);
+      console.error("Erro: ", err);
     }
 }
 
@@ -19,6 +19,7 @@ async function requestFacialRecognition (blob) {
         },
         body: blob
     })
+    alert(await response.text());
 
 }
 
@@ -45,11 +46,10 @@ async function transformFrameToBlob () {
         }, 'image/jpeg');
 
 
-    }, 1000);
+    }, 500);
 
 }
 
-
-startCamera().then(() => {
+camera().then(() => {
     transformFrameToBlob()
 })
