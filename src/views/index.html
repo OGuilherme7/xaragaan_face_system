@@ -3,15 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FrontEnd</title>
+    <title>Faceapi</title>
+    <style>
+
+        body {
+            position: relative;
+            height: 95vh;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            width: 35%;
+            height: 3rem;
+            background-color: rgb(46, 80, 231);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 0.5rem;
+            color: white;
+            text-align: center;
+            line-height: 3rem;
+            text-transform: uppercase;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-weight: bold;
+            letter-spacing: 0.06rem;
+        }
+
+        @keyframes message {
+            0% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 1;
+            }
+   
+            100% {
+                opacity: 0;
+            }
+        }
+
+    </style>
 </head>
 <body>
 
-    <video id="video" autoplay style="width: 100%; max-width: 500px;"></video>
+    <h1>Faciapi</h1>
 
-    <h1>FrontEnd Teste da Aplicação</h1>
-    
+    <video id="video" autoplay style="width: 100%; max-width: 500px;"></video><br>
 
+    <button id="facial-recognition-mode" onclick="toggleMode(event)">Ativar Análise</button>
+
+    <div class="message hidden"></div>
 
     <script src="/script.js"></script>
 </body>

@@ -11,8 +11,8 @@ exports = module.exports = new class Manager{}();
 
 exports.loadModels = loadModels;
 exports.loadStudents = loadStudents;
-exports.findStudent = findStudent;
 exports.createFaceDetection = createFaceDetection;
+exports.findStudent = findStudent;
 
 async function loadModels () {
     await faceapi.nets.tinyFaceDetector.loadFromDisk('./models');
@@ -24,7 +24,7 @@ async function findStudent (faceDetectionStudent) {
     const limiar = 0.6;
 
     return this.students.find(student => {
-        if (faceapi.euclideanDistance(student.faceDetection, faceDetectionStudent) < limiar) {
+        if (faceapi.euclideanDistance(student.faceDetection.descriptor, faceDetectionStudent.descriptor) < limiar) {
             return student;
         };
     });

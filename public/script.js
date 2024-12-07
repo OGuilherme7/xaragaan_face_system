@@ -1,12 +1,14 @@
-const videoElement = document.querySelector('#video');
+const video = document.querySelector('#video');
+const btn = document.querySelector('#facial-recognition-mode');
+const messageDiv = document.querySelector('.message');
+let idInterval;
 
 async function camera() {
     try {
-      const videoElement = document.getElementById('video');
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoElement.srcObject = stream;
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
     } catch (err) {
-      console.error("Erro: ", err);
+        console.error("Erro: ", err);
     }
 }
 
@@ -19,24 +21,28 @@ async function requestFacialRecognition (blob) {
         },
         body: blob
     })
-    alert(await response.text());
-
+    
+    messageDiv.classList.remove('hidden');
+    messageDiv.style.animation = 'message 2s';
+    messageDiv.innerText = await response.text();
+    setTimeout(() => {  
+        messageDiv.classList.add('hidden');
+    }, 2000);
 }
 
 
 
 async function transformFrameToBlob () {
-
-    setInterval(() => {
+    
+    idInterval = setInterval(() => {
         const canvas = document.createElement('canvas');
-
         const ctx = canvas.getContext('2d');
 
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
- 
-        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+    
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
         canvas.toBlob((blob) => {
 
             if (blob) {
@@ -45,11 +51,21 @@ async function transformFrameToBlob () {
 
         }, 'image/jpeg');
 
-
-    }, 500);
+    }, 4000);
 
 }
 
-camera().then(() => {
-    transformFrameToBlob()
-})
+async function toggleMode (evt) {
+
+    const content = evt.target.innerText;
+
+    if (content === 'Ativar Análise') {
+        evt.target.innerText = 'Desativar Análise';
+        camera().then(transformFrameToBlob)
+    } else {
+        evt.target.innerText = 'Ativar Análise';
+        clearInterval(idInterval);
+        navigator.mediaDevices.getUserMedia({ video: false });
+        video.srcObject = null;
+    }
+}
