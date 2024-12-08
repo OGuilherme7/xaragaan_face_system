@@ -4,6 +4,8 @@ const path = require('node:path');
 const app = express();
 
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
 
 console.time('Aplicação');
 
@@ -28,17 +30,19 @@ app.post('/', (req, res) => {
         const faceDetectionStudent = await facialRecognition.createFaceDetection(faceBuffer);
         if (!faceDetectionStudent) {
             res.send('A requisição vinda do frontend não possui um rosto!');
+            console.timeEnd('A requisição demorou: ');
             return;
         }
 
         const studentSearched = await facialRecognition.findStudent(faceDetectionStudent);
 
         if (studentSearched) {
+            console.log(facialRecognition.students);
             console.log(studentSearched.nome);
-            res.send('O estudante foi encontrado e sua presença foi registrada!')
-            fs.writeFileSync(path.resolve(__dirname, 'imagem-encontrada.jpg'), studentSearched.image);
+            res.send(`A sua presença foi registrada! [${studentSearched.nome}]`)
         } else {
             res.send('A pessoa não foi encontrada!');
+            console.timeEnd('A requisição demorou: ');  
         }
         console.timeEnd('A requisição demorou: ');
 
@@ -46,11 +50,33 @@ app.post('/', (req, res) => {
 
 })
 
+app.get('/add', (req, res) => {
+
+    res.sendFile(__dirname + '/views/add.html');
+
+})
+
+app.post('/add', async (req, res) => {
+
+    const { nome, image } = req.body;
+
+    const bufferImage = Buffer.from(image, 'base64');
+
+    const faceDetection = await facialRecognition.createFaceDetection(bufferImage);
+
+    facialRecognition.students.push({ nome, faceDetection });
+
+    res.redirect('/')
+
+    console.log(facialRecognition.students)
+})
+
+
+
 const alunos = [
     {nome: 'Pedro'},
     {nome: 'Kaio'},
     {nome: 'João'},
-    {nome: 'Guilherme'},
     {nome: 'Carlos'},
     {nome: 'Jhonatan'},
     {nome: 'Andréia'}
@@ -62,7 +88,6 @@ fs.readdirSync(path.join(__dirname, '../alunos-imgs')).forEach((fileName, index)
     alunos[index].image = bufferAluno;
 
 })
-
 
 const PORT = 3000;
 
@@ -78,7 +103,8 @@ facialRecognition.loadModels()
         app.listen(PORT, () => {
             console.log('Rodando servidor no caminho http://localhost:' + PORT);
         })
-
+        
         console.timeEnd('Aplicação');
-
+        
     })
+    

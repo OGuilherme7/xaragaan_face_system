@@ -21,10 +21,11 @@ async function loadModels () {
 }
 
 async function findStudent (faceDetectionStudent) {
-    const limiar = 0.6;
+    const limiar = 0.5;
 
     return this.students.find(student => {
         if (faceapi.euclideanDistance(student.faceDetection.descriptor, faceDetectionStudent.descriptor) < limiar) {
+            console.log(faceapi.euclideanDistance(student.faceDetection.descriptor, faceDetectionStudent.descriptor))
             return student;
         };
     });
